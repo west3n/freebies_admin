@@ -10,7 +10,7 @@ class UserProfile(models.Model):
     city = models.CharField(verbose_name="Населенный пункт", max_length=255, blank=True, null=True)
 
     def __str__(self):
-        return f"{self.username} - ID: {self.tg}"
+        return f"{self.fullname} - ID: {self.tg}"
 
     class Meta:
         verbose_name = 'Пользователь бота'
