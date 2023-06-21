@@ -42,7 +42,7 @@ class Advert(models.Model):
         ('User', 'Пользователь'),
         ('Author', 'Владелец'),
     ]
-    payer = models.CharField(verbose_name="Выбор отправителя", max_length=20, choices=payer_choices)
+    payer = models.CharField(verbose_name="Выбор отправителя", max_length=20, choices=payer_choices, null=True)
 
     def __str__(self):
         return str(self.id)

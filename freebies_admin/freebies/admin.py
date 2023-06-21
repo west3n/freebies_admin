@@ -1,5 +1,9 @@
 from django.contrib import admin
 from .models import UserProfile, Category, Advert, Review, BlockedUsers
+# from django.contrib.admin.models import LogEntry
+#
+# # удаление истории правок админ-панели
+# LogEntry.objects.all().delete()
 
 
 class UserProfileAdmin(admin.ModelAdmin):
@@ -13,7 +17,7 @@ class UserProfileAdmin(admin.ModelAdmin):
 
 
 class AdvertAdmin(admin.ModelAdmin):
-    readonly_fields = ['id', 'date', 'photos', 'author']
+    readonly_fields = ['id', 'date', 'photos', 'author', 'region', 'city', 'caption', 'delivery']
     list_display = ['id', 'date', 'author', 'category', 'caption']
     list_filter = ['category', 'region']
     search_fields = ['id', 'city', 'author']
