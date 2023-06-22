@@ -87,3 +87,14 @@ class BlockedUsers(models.Model):
     class Meta:
         verbose_name = 'заблокированные пользователи'
         verbose_name_plural = 'Заблокированные пользователи'
+
+
+class ExplicitWords(models.Model):
+    word = models.CharField(verbose_name="Запрещённое слово", max_length=40)
+
+    def __str__(self):
+        return self.word
+
+    class Meta:
+        verbose_name = 'запрещенные слова'
+        verbose_name_plural = 'Запрещенные слова'

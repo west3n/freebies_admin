@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import UserProfile, Category, Advert, Review, BlockedUsers
+from .models import UserProfile, Category, Advert, Review, BlockedUsers, ExplicitWords
 # from django.contrib.admin.models import LogEntry
 #
 # # удаление истории правок админ-панели
@@ -38,3 +38,4 @@ admin.site.register(Advert, AdvertAdmin)
 admin.site.register(Category)
 admin.site.register(Review)
 admin.site.register(BlockedUsers, BlockedUsersAdmin)
+admin.site.register(ExplicitWords)
