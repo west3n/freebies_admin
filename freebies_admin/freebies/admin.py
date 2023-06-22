@@ -33,9 +33,32 @@ class BlockedUsersAdmin(admin.ModelAdmin):
         model = BlockedUsers
 
 
+class FirstLetterFilter(admin.SimpleListFilter):
+    title = 'Первая буква'
+    parameter_name = 'Первая буква'
+
+    def lookups(self, request, model_admin):
+        blocked_users = model_admin.model.objects.values_list('word', flat=True)
+        first_letters = {word[0].upper() for word in blocked_users}
+        return [(letter, letter) for letter in sorted(first_letters)]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(word__istartswith=self.value())
+        return queryset
+
+
+class ExplicitWordsAdmin(admin.ModelAdmin):
+    list_filter = [FirstLetterFilter]
+
+    class Meta:
+        model = BlockedUsers
+        ordering = ['word']
+
+
 admin.site.register(UserProfile, UserProfileAdmin)
 admin.site.register(Advert, AdvertAdmin)
 admin.site.register(Category)
 admin.site.register(Review)
 admin.site.register(BlockedUsers, BlockedUsersAdmin)
-admin.site.register(ExplicitWords)
+admin.site.register(ExplicitWords, ExplicitWordsAdmin)
