@@ -8,6 +8,7 @@ class UserProfile(models.Model):
     contact = models.CharField(verbose_name="Номер телефона", max_length=255, blank=True, null=True)
     region = models.CharField(verbose_name="Регион проживания", max_length=255, blank=True, null=True)
     city = models.CharField(verbose_name="Населенный пункт", max_length=255, blank=True, null=True)
+    rating = models.FloatField(verbose_name="Рейтинг", default=0)
 
     def __str__(self):
         return f"{self.fullname} - ID: {self.tg}"
@@ -29,7 +30,12 @@ class Category(models.Model):
 
 
 class Advert(models.Model):
-    id = models.AutoField(verbose_name='Уникальный ID', primary_key=True)
+    payer_choices = [('User', 'Пользователь'),
+                     ('Author', 'Владелец')]
+    status_choices = [('active', 'Активное объявление'),
+                      ('agreement', 'Найден получатель'),
+                      ('confirm', 'Вещи переданы')]
+    id = models.AutoField(verbose_name='ID', primary_key=True)
     date = models.DateTimeField(verbose_name="Дата создания", auto_now_add=True)
     author = models.ForeignKey(UserProfile, verbose_name='Автор объявления', on_delete=models.CASCADE)
     region = models.CharField(verbose_name='Регион объявления', max_length=100)
@@ -38,11 +44,9 @@ class Advert(models.Model):
     photos = models.TextField(verbose_name="ID медиафайлов")
     caption = models.CharField(verbose_name="Описание", max_length=1024)
     delivery = models.BooleanField(verbose_name="Готовность отправить доставку", default=False)
-    payer_choices = [
-        ('User', 'Пользователь'),
-        ('Author', 'Владелец'),
-    ]
-    payer = models.CharField(verbose_name="Выбор отправителя", max_length=20, choices=payer_choices, null=True)
+    payer = models.CharField(verbose_name="Выбор отправителя", max_length=20,
+                             choices=payer_choices, blank=True, null=True)
+    status = models.CharField(verbose_name="Статус", max_length=30, choices=status_choices, default='active')
 
     def __str__(self):
         return str(self.id)
@@ -62,23 +66,26 @@ class Favorite(models.Model):
     class Meta:
         verbose_name = 'избранное'
         verbose_name_plural = 'Избранное'
+        unique_together = ('user', 'ad')
 
 
 class Review(models.Model):
-    user = models.ForeignKey(UserProfile, verbose_name="Пользователь", on_delete=models.CASCADE)
-    ad = models.ForeignKey(Advert, verbose_name="Объявление", on_delete=models.CASCADE)
+    author = models.ForeignKey(UserProfile, verbose_name="Автор", on_delete=models.CASCADE, null=True)
+    user_id = models.BigIntegerField(verbose_name="Пользователь", null=True)
     text = models.TextField(verbose_name="Текст отзыва")
 
     def __str__(self):
-        return f"{self.user} - {self.ad}"
+        return f"{self.author} - {self.text}"
 
     class Meta:
         verbose_name = 'отзывы'
         verbose_name_plural = 'Отзывы'
+        unique_together = ('author', 'user_id')
 
 
 class BlockedUsers(models.Model):
-    blocked_user = models.ForeignKey(UserProfile, verbose_name="Заблокированный пользователь", on_delete=models.CASCADE)
+    blocked_user = models.OneToOneField(
+        UserProfile, verbose_name="Заблокированный пользователь", on_delete=models.CASCADE, unique=True)
     reason = models.TextField(verbose_name="Причина блокировки")
 
     def __str__(self):
@@ -98,3 +105,33 @@ class ExplicitWords(models.Model):
     class Meta:
         verbose_name = 'запрещенные слова'
         verbose_name_plural = 'Запрещенные слова'
+
+
+class Agreements(models.Model):
+    user_id = models.BigIntegerField(verbose_name="Пользователь")
+    author = models.ForeignKey(UserProfile, verbose_name="Автор объявления", on_delete=models.CASCADE)
+    ad = models.ForeignKey(Advert, verbose_name="Объявление", on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.author} - {self.user_id}"
+
+    class Meta:
+        verbose_name = 'договоренности'
+        verbose_name_plural = 'Договоренности'
+        unique_together = ('author', 'ad')
+
+
+class SendMessage(models.Model):
+    type_choices = [('ad', 'Реклама'),
+                    ('admin', 'Администраторское'),
+                    ('regular', 'Без пометок')]
+    message_type = models.CharField(verbose_name='Тип сообщения', choices=type_choices, null=False, default='regular')
+    text = models.CharField(verbose_name="Текст сообщения", max_length=244, null=False)
+    image = models.ImageField(verbose_name="Прикрепленная картинка", blank=True, null=True)
+
+    def __str__(self):
+        return self.text
+
+    class Meta:
+        verbose_name = 'сообщение'
+        verbose_name_plural = 'Отправить сообщение всем пользователям'

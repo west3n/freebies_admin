@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import UserProfile, Category, Advert, Review, BlockedUsers, ExplicitWords
+from .models import UserProfile, Category, Advert, Review, BlockedUsers, ExplicitWords, SendMessage
 # from django.contrib.admin.models import LogEntry
 #
 # # удаление истории правок админ-панели
@@ -7,8 +7,8 @@ from .models import UserProfile, Category, Advert, Review, BlockedUsers, Explici
 
 
 class UserProfileAdmin(admin.ModelAdmin):
-    readonly_fields = ('tg', 'username', 'fullname', 'contact', 'region', 'city')
-    list_display = ('tg', 'fullname', 'region', 'city')
+    readonly_fields = ('tg', 'username', 'fullname', 'contact', 'region', 'city', 'rating')
+    list_display = ('tg', 'fullname', 'region', 'city', 'rating')
     list_filter = ['region']
     search_fields = ['tg', 'fullname']
 
@@ -18,9 +18,9 @@ class UserProfileAdmin(admin.ModelAdmin):
 
 class AdvertAdmin(admin.ModelAdmin):
     readonly_fields = ['id', 'date', 'photos', 'author', 'region', 'city', 'caption', 'delivery']
-    list_display = ['id', 'date', 'author', 'category', 'caption']
-    list_filter = ['category', 'region']
-    search_fields = ['id', 'city', 'author']
+    list_display = ['id', 'date', 'author', 'category', 'caption', 'status']
+    list_filter = ['category', 'region', 'status']
+    search_fields = ['id', 'city', 'author__tg', 'author__fullname']
 
     class Meta:
         model = Advert
@@ -56,9 +56,23 @@ class ExplicitWordsAdmin(admin.ModelAdmin):
         ordering = ['word']
 
 
+class SendMessageAdmin(admin.ModelAdmin):
+    list_display = ['message_type', 'text']
+
+    class Meta:
+        model = SendMessage
+
+
+class ReviewAdmin(admin.ModelAdmin):
+    list_display = ['author', 'user_id', 'text']
+
+    class Meta:
+        model = SendMessage
+
+
 admin.site.register(UserProfile, UserProfileAdmin)
 admin.site.register(Advert, AdvertAdmin)
 admin.site.register(Category)
-admin.site.register(Review)
+admin.site.register(Review, ReviewAdmin)
 admin.site.register(BlockedUsers, BlockedUsersAdmin)
 admin.site.register(ExplicitWords, ExplicitWordsAdmin)
