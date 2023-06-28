@@ -135,3 +135,15 @@ class SendMessage(models.Model):
     class Meta:
         verbose_name = 'сообщение'
         verbose_name_plural = 'Отправить сообщение всем пользователям'
+
+
+class UserRating(models.Model):
+    user = models.ForeignKey(UserProfile, verbose_name="Имя пользователя", on_delete=models.CASCADE)
+    grade = models.IntegerField(verbose_name='Оценка', blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.user} - {self.grade}"
+
+    class Meta:
+        verbose_name = 'оценка'
+        verbose_name_plural = 'Оценки'
