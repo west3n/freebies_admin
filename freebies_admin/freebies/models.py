@@ -80,7 +80,6 @@ class Review(models.Model):
     class Meta:
         verbose_name = 'отзывы'
         verbose_name_plural = 'Отзывы'
-        unique_together = ('author', 'user_id')
 
 
 class BlockedUsers(models.Model):
@@ -118,7 +117,6 @@ class Agreements(models.Model):
     class Meta:
         verbose_name = 'договоренности'
         verbose_name_plural = 'Договоренности'
-        unique_together = ('author', 'ad')
 
 
 class SendMessage(models.Model):

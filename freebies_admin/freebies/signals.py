@@ -44,7 +44,7 @@ def get_users_list():
 
 @receiver(post_save, sender=SendMessage)
 def send_message_for_all(sender, instance, **kwargs):
-    path = 'C:/Users/miros/Documents/PycharmProjects/freebies_admin/freebies_admin/'
+    path = '/admin/freebies_admin/freebies_admin'
 
     async def send_message():
         bot = Bot(decouple.config("BOT_TOKEN"))
